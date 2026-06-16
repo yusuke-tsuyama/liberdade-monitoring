@@ -1,0 +1,34 @@
+name: 死活監視
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 毎時実行
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: デスク姿勢コーチ
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://05-desk-posture-coach.vercel.app)
+          echo "デスク姿勢コーチ: $STATUS"
+          if [ "$STATUS" != "200" ]; then exit 1; fi
+
+      - name: ホワイト企業ナビ
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://white-company-navi.vercel.app)
+          echo "ホワイト企業ナビ: $STATUS"
+          if [ "$STATUS" != "200" ]; then exit 1; fi
+
+      - name: 日本語クリアチェッカー
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://nihongo-checker.vercel.app)
+          echo "日本語クリアチェッカー: $STATUS"
+          if [ "$STATUS" != "200" ]; then exit 1; fi
+
+      - name: 財務三表ビジュアライザー
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://zaimu-visualizer.vercel.app)
+          echo "財務三表ビジュアライザー: $STATUS"
+          if [ "$STATUS" != "200" ]; then exit 1; fi
