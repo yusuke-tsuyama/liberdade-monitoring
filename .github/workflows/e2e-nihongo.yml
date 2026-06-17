@@ -1,0 +1,35 @@
+name: E2E 日本語クリアチェッカー
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日JST 09:00（UTC 00:00）
+  workflow_dispatch:       # 手動実行も可能
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.jsをセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージをインストール
+        run: npm ci
+
+      - name: Playwrightブラウザをインストール
+        run: npx playwright install --with-deps chromium
+
+      - name: E2Eテストを実行
+        run: npx playwright test
+
+      - name: テスト結果レポートをアップロード
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
