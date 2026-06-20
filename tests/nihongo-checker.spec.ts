@@ -5,11 +5,11 @@ test('日本語クリアチェッカー：診断機能が正常に動作する',
   await page.goto('https://nihongo-checker.vercel.app');
   await expect(page).toHaveTitle(/.+/, { timeout: 30000 });
 
-  // 1.5. オンボーディングモーダルが表示されていれば閉じる
-  const closeButton = page.getByRole('button', { name: /閉じる|始める|スタート|OK|はじめる|✕|×/ });
-  if (await closeButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-    await closeButton.click();
-  }
+  // 1.5. オンボーディング完了フラグをlocalStorageにセットしてリロード
+  await page.evaluate(() => {
+    localStorage.setItem('nihongo_checker_onboarded', '1');
+  });
+  await page.reload();
 
   // 2. テキストエリアに文章を入力
   const textarea = page.getByPlaceholder(/文章|テキスト|入力/);
