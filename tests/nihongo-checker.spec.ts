@@ -11,6 +11,12 @@ test('日本語クリアチェッカー：診断機能が正常に動作する',
   });
   await page.reload();
 
+  // 1.6. オンボーディングオーバーレイが完全に消えるまで待つ
+  await page.waitForFunction(() => {
+    const overlays = document.querySelectorAll('[style*="z-index: 100"], [style*="zIndex: 100"]');
+    return overlays.length === 0;
+  }, { timeout: 10000 }).catch(() => {});
+
   // 2. テキストエリアに文章を入力
   const textarea = page.getByPlaceholder(/文章|テキスト|入力/);
   await expect(textarea).toBeVisible({ timeout: 15000 });
