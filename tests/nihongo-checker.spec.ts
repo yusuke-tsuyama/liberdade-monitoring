@@ -5,6 +5,12 @@ test('日本語クリアチェッカー：診断機能が正常に動作する',
   await page.goto('https://nihongo-checker.vercel.app');
   await expect(page).toHaveTitle(/.+/, { timeout: 30000 });
 
+  // 1.5. オンボーディングモーダルが表示されていれば閉じる
+  const closeButton = page.getByRole('button', { name: /閉じる|始める|スタート|OK|はじめる|✕|×/ });
+  if (await closeButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+    await closeButton.click();
+  }
+
   // 2. テキストエリアに文章を入力
   const textarea = page.getByPlaceholder(/文章|テキスト|入力/);
   await expect(textarea).toBeVisible({ timeout: 15000 });
@@ -17,9 +23,7 @@ test('日本語クリアチェッカー：診断機能が正常に動作する',
 
   // 4. エラー表示が出ていないことを確認
   const errorText = page.getByText(/エラー|error|失敗|Error/i);
-  await expect(errorText).toBeHidden({ timeout: 5000 }).catch(() => {
-    // エラーテキストが存在しない場合は正常
-  });
+  await expect(errorText).toBeHidden({ timeout: 5000 }).catch(() => {});
 
   // 5. 結果またはスコアが表示されることを確認（AI応答待ちで最大60秒）
   await expect(
